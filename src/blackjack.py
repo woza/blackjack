@@ -7,10 +7,8 @@ import requests
 import sys
 
 parser = argparse.ArgumentParser(description='Blackjack DLNA Player')
-parser.add_argument('--server', metavar='IP')
 parser.add_argument('--ui', choices=['curses'], default='curses')
-# Add more UIs here in future
-parser.add_argument('--config', metavar='path', default=None)
+parser.add_argument('--config', metavar='path', default='/usr/local/etc/blackjack.conf')
 
 args = parser.parse_args()
 conf = config(args.config)
