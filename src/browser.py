@@ -35,7 +35,7 @@ class item:
         
     def indent_print(self, depth):
         offset = ''.join([' ' for i in range(depth * 2)])
-        print offset + self.name + "<" + str(self.oid) + ">"
+        print (offset + self.name + "<" + str(self.oid) + ">")
 
     def lookup_url(self):
         soap_envelope='<?xml version="1.0" encoding="UTF-8" ?>'\
@@ -73,7 +73,7 @@ class folder:
             
     def indent_print(self, depth = 0):
         offset = ''.join([' ' for i in range(depth * 2)])
-        print offset + self.name + "<" + str(self.oid) + ">"
+        print (offset + self.name + "<" + str(self.oid) + ">")
         for c in self.children:
             c.indent_print( depth + 1 )
         for f in self.files:
@@ -82,7 +82,7 @@ class folder:
     def fetch_contents(self, debug=False):
         response = self.query_server()
         if debug:
-            print response.prettify()
+            print (response.prettify())
         files = response.find_all('item')
         self.files = []
         for f in files:
@@ -121,6 +121,6 @@ if __name__ == "__main__":
 #    curr = curr.children[1]
     curr.fetch_contents(True)
     url = curr.files[-2].lookup_url()
-    print url
+    print (url)
 #    curr.indent_print()
 

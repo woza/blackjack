@@ -1,29 +1,27 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from curses_ui import launch as curses_launch
-from mplayer import mplayer_init
-import sys
+from config import config
 import argparse
+import requests
+import sys
 
 parser = argparse.ArgumentParser(description='Blackjack DLNA Player')
 parser.add_argument('--server', metavar='IP')
 parser.add_argument('--ui', choices=['curses'], default='curses')
 # Add more UIs here in future
-parser.add_argument('--video', choices=['mplayer'], default='mplayer')
-# Add more video players here in future
-# Add audio player here in future
+parser.add_argument('--config', metavar='path', default=None)
 
 args = parser.parse_args()
+conf = config(args.config)
 
-# Default values
-handlers={
-    'video' : mplayer_init()
-}
+try:
+    if args.ui == 'curses':    
+        curses_launch( conf )
 
-if args.ui == 'curses':
-    curses_launch( handlers )
-
-
+except requests.exceptions.ConnectionError as e:
+    print ("Failed to connect to DLNA server")
+    sys.exit(1)
 
 
 
