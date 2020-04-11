@@ -48,9 +48,9 @@ defined: 'server' provides the address of the DLNA server to query, and 'port'
 defines which port to use when talking to the server.  An example network
 section is:
 
-[network]
-server=192.168.30.207
-port=8201
+    [network]
+    server=192.168.30.207
+    port=8201
 
 The optional sections govern how media retrieved from DLNA are played to the
 user.  Currently there are two media types defined: 'audio' and 'video'.  Each
