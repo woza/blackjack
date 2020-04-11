@@ -1,6 +1,7 @@
 import os.path
 import configparser
 from mplayer import mplayer_init
+import sys
 
 class config:
     def __init__(self, path):
