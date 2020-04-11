@@ -1,34 +1,78 @@
+Introduction
+============
+
+Welcome to the Blackjack DLNA player!  This player exists because I could not
+get reliable DLNA playback from my local server using any one of the host of
+other players I tried (yes, including VLC).  Maybe it's my network, maybe my
+server settings, but in the end I decided to follow the timeless advice of
+Bender: "I'll build my own DLNA client - with blackjack!  And hookers!".  The
+hookers are not yet implemented, but the client seems to work just fine.
+
+Note that this is a _very lightweight_ client - it calls out to external media
+players to perform the actual media playback.  Therefore, you'll need
+something (currently, mplayer) installed on your system in addition to
+Blackjack in order to actually play media.
+
+Caveats
+=======
+
+This software is tested mostly through daily use on my home network, running
+on OpenSUSE Linux.  I would be very surprised if it worked out of the box on
+Windows, but it shouldn't be too hard to tweak.  It probably works on other
+Linux distros, but I haven't tried.
+
 Installing
 ==========
-Blackjack is written using Python 3.
+Blackjack is written using Python 3.  The following steps will get you from a
+clean, minimal install of Ubuntu 19.04 Desktop (+OpenSSH server) to a running
+instance of blackjack.
 
-Blackjack has the following dependencies:
-* BeautifulSoup 4
-* LXML
+1. sudo apt install python3-pip mplayer
+2. sudo pip3 install beautifulsoup4 lxml
 
-sudo pip3 install beautifulsoup4 lxml
 
-Config file syntax
-==================
+Using
+=====
 
-Blackjack uses a .INI file format.  The file begins with a [handlers] section
-which defines various _handlers_ - a handler is a backend program which is
-invoked to play media streamed from the DLNA server.  The following keys are
-valid in the [handlers] section:
+Blackjack is driven from a config file.  By default, it looks for a
+system-wide config file in /usr/local/etc/blackjack.conf - however, you can
+override this by using the '--config' command-line argument.  For example:
 
- * video
- * audio
+./blackjack --config /some/other/path.conf
 
-For each handler, it is possible to configure it using a handler-specific keys
-in a per-handler section.  For example, the only handler currently implemented
-is the _mplayer_ handler.  This handler needs the path of the _mplayer_ binary
-- by default, this is assumed to be /usr/bin/mplayer.  However, if your system
-has installed mplayer at /usr/local/bin/mplayer, you can set up a
-configuration as follows:
+The configuration file is written using an INI syntax.  There is one mandatory
+and several optional sections to the config file.
+
+The mandatory section is the network information section, where two keys are
+defined: 'server' provides the address of the DLNA server to query, and 'port'
+defines which port to use when talking to the server.  An example network
+section is:
+
+[network]
+server=192.168.30.207
+port=8201
+
+The optional sections govern how media retrieved from DLNA are played to the
+user.  Currently there are two media types defined: 'audio' and 'video'.  Each
+type is associated with a _handler_ - the default (and currently only) handler
+is the 'mplayer' handler.  So, the only valid handlers section currently looks
+like this:
+
+[handlers]
+video=mplayer
+audio=mplayer
+
+It is not necessary to specify this section, though, as these are the default
+settings for blackjack.
+
+Each handler can have its own configuration directive.  The mplayer handler
+has two configurable settings: the path to the mplayer binary, and the size of
+the cache (specified in KB).  These are provided as so:
 
 [mplayer]
-path=/usr/local/bin/mplayer
+path=/usr/bin/mplayer
+cache=10240
 
-Configurable settings for mplayer handler:
-   * path - set the path of the mplayer binary
-   * cache - set the size of the cache used for mplayer
+(This example shows the default settings - you only need to include an
+[mplayer] section if you want to move away from these defaults).
+
