@@ -58,9 +58,9 @@ type is associated with a _handler_ - the default (and currently only) handler
 is the 'mplayer' handler.  So, the only valid handlers section currently looks
 like this:
 
-[handlers]
-video=mplayer
-audio=mplayer
+    [handlers]
+    video=mplayer
+    audio=mplayer
 
 It is not necessary to specify this section, though, as these are the default
 settings for blackjack.
@@ -69,9 +69,9 @@ Each handler can have its own configuration directive.  The mplayer handler
 has two configurable settings: the path to the mplayer binary, and the size of
 the cache (specified in KB).  These are provided as so:
 
-[mplayer]
-path=/usr/bin/mplayer
-cache=10240
+    [mplayer]
+    path=/usr/bin/mplayer
+    cache=10240
 
 (This example shows the default settings - you only need to include an
 [mplayer] section if you want to move away from these defaults).
