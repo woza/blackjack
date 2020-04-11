@@ -8,7 +8,9 @@ from browser import folder
 #
 # The class works as follows: when navigation by the user enters a new folder,
 # that folder's contents are fetched from the server - this is done within
-# set_active_folder().  We build a list of the contents and save it in self.lines.  We save two pointers to various reference points within this array:
+# set_active_folder().  We build a list of the contents and save it in
+# self.lines.  We save two pointers to various reference points within this
+# array:
 #
 #  self.selected_row is the row which should be highlighted and which will be
 #  invoked if the user presses the right arrow.
@@ -27,7 +29,7 @@ class ncurses_state:
         self.entry_count = 0
         self.selected_row = -1
         self.lines = []
-        self.set_active_folder( folder("/") )
+        self.set_active_folder( folder("/", config) )
         self.display_active_folder()
         self.highlight_current_row()
         

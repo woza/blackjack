@@ -1,7 +1,14 @@
 import requests
 import sys
 from bs4 import BeautifulSoup
+import logger
 
+
+class dlna_browser:
+    def __init__(self, settings):
+        self.config = settings
+        self.server_address = 'http://%s:%s' % ( settings.server, settings.port)
+    
 def dlna_request( url, action, soap_mess ):
     headers={
         'User-Agent' : 'gupnp-av-cp GUPnP/0.18.1 DLNADOC/1.50',
@@ -21,11 +28,13 @@ def dlna_request( url, action, soap_mess ):
     return nested
 
 class item:
-    def __init__(self, container, item_xml):
+    def __init__(self, container, item_xml, config):
         self.name = item_xml.find('dc:title').string
         self.oid = item_xml['id']
         self.container = container
         self.kind = item_xml.find('upnp:class').string
+        self.config = config
+        self.server_address = 'http://%s:%s' % ( config.server, config.port)
 
     def is_video(self):
         return self.kind == 'object.item.videoItem'
@@ -52,17 +61,19 @@ class item:
         '</s:Body>'\
         '</s:Envelope>'
 
-        info = dlna_request('http://192.168.0.107:8200/ctl/ContentDir', 'Search', soap_envelope )
+        info = dlna_request('%s/ctl/ContentDir' % self.server_address, 'Search', soap_envelope )
         return info.res.string
 
 class folder:
-    def __init__(self, name, oid='0', parent=None):
+    def __init__(self, name, config, oid='0', parent=None):
         self.name = name
         self.oid = oid
         self.children = []
         self.files = []
         self.parent = parent
-
+        self.config = config
+        self.server_address = 'http://%s:%s' % ( config.server, config.port)
+    
     def subfolders(self):
         for c in self.children:
             yield c.name
@@ -86,11 +97,11 @@ class folder:
         files = response.find_all('item')
         self.files = []
         for f in files:
-            self.files += [ item(self,f) ]            
+            self.files += [ item(self,f, self.config) ]            
         subfolders = response.find_all('container')
         self.children = []
         for s in subfolders:
-            self.children += [ folder(s.find('dc:title').string, s['id'], self) ]
+            self.children += [ folder(s.find('dc:title').string, self.config, s['id'], self) ]
             
     def query_server(self):
         soap_mess='<?xml version="1.0"?>'\
@@ -106,21 +117,5 @@ class folder:
             '</u:Browse>'\
             '</s:Body>'\
             '</s:Envelope>'
-        return dlna_request('http://192.168.0.107:8200/ctl/ContentDir', 'Browse', soap_mess )
-
-
-if __name__ == "__main__":
-    root = folder("/")
-    root.fetch_contents()
-    curr = root.children[0]
-    curr.fetch_contents()
-    curr = curr.children[0]
-    #curr.fetch_contents()
-#    curr = curr.children[-1]
-#    curr.fetch_contents(True)
-#    curr = curr.children[1]
-    curr.fetch_contents(True)
-    url = curr.files[-2].lookup_url()
-    print (url)
-#    curr.indent_print()
+        return dlna_request('%s/ctl/ContentDir' % self.server_address, 'Browse', soap_mess )
 

@@ -4,6 +4,7 @@ from curses_ui import launch as curses_launch
 from config import config
 import argparse
 import requests
+import browser
 import sys
 
 parser = argparse.ArgumentParser(description='Blackjack DLNA Player')
