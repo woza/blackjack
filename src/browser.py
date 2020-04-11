@@ -42,9 +42,9 @@ class item:
     def is_audio(self):
         return self.kind == 'object.item.audioItem.musicTrack'
         
-    def indent_print(self, depth):
+    def indent_print(self, to, depth):
         offset = ''.join([' ' for i in range(depth * 2)])
-        print (offset + self.name + "<" + str(self.oid) + ">")
+        to.write(offset + self.name + "<" + str(self.oid) + ">\n")
 
     def lookup_url(self):
         soap_envelope='<?xml version="1.0" encoding="UTF-8" ?>'\
@@ -82,18 +82,18 @@ class folder:
         for f in self.files:
             yield f.name
             
-    def indent_print(self, depth = 0):
+    def indent_print(self, to, depth = 0):
         offset = ''.join([' ' for i in range(depth * 2)])
-        print (offset + self.name + "<" + str(self.oid) + ">")
+        to.write(offset + self.name + "<" + str(self.oid) + ">\n")
         for c in self.children:
-            c.indent_print( depth + 1 )
+            c.indent_print( to, depth + 1 )
         for f in self.files:
-            f.indent_print( depth )
+            f.indent_print( to, depth )
             
-    def fetch_contents(self, debug=False):
+    def fetch_contents(self, debug_to=None):
         response = self.query_server()
-        if debug:
-            print (response.prettify())
+        if debug_to is not None:
+            debug_to.write(response.prettify()+"\n")
         files = response.find_all('item')
         self.files = []
         for f in files:
